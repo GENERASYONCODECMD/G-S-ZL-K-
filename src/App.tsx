@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Loader2, AlertCircle, Lock, Search } from "lucide-react";
 import { useWindowManager } from "./hooks/useWindowManager";
 import { ThemeProvider } from "./context/ThemeContext";
+import { TDKService } from "./services/tdkService";
 
 function AppContent() {
   const { 
@@ -54,27 +55,18 @@ function AppContent() {
     }
 
     try {
-      const response = await fetch(`/api/tdk?q=${encodeURIComponent(searchQuery)}`);
-      if (!response.ok) throw new Error("Failed to fetch");
+      const data = await TDKService.searchWord(searchQuery);
       
-      const data = await response.json();
-      
-      if (data.error) {
-        setError(data.error);
-      } else if (Array.isArray(data) && data.length > 0) {
-        // Update the existing search window with the result data
-        const targetWindow = windows.find(w => w.type === 'search');
-        if (targetWindow) {
-            updateWindowData(targetWindow.id, data[0]);
-        } else {
-            // Fallback if window was closed during search (unlikely)
-            openWindow('Sözlük', 'search', data[0]);
-        }
+      // Update the existing search window with the result data
+      const targetWindow = windows.find(w => w.type === 'search');
+      if (targetWindow) {
+          updateWindowData(targetWindow.id, data[0]);
       } else {
-        setError("Kelime bulunamadı.");
+          // Fallback if window was closed during search (unlikely)
+          openWindow('Sözlük', 'search', data[0]);
       }
     } catch (err) {
-      setError("Bir hata oluştu.");
+      setError(err instanceof Error ? err.message : "Bir hata oluştu.");
     } finally {
       setLoading(false);
     }
