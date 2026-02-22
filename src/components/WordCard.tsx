@@ -104,6 +104,16 @@ export const WordCard: FC<WordCardProps> = ({ data, isFavorite, onToggleFavorite
           </motion.div>
         ))}
       </div>
+
+      {/* Compound Words */}
+      {data.birlesikler && (
+        <div className="mt-8 pt-6 border-t border-white/10">
+            <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-3">Birleşik Kelimeler</h3>
+            <p className="text-sm text-white/70 leading-relaxed">
+                {data.birlesikler}
+            </p>
+        </div>
+      )}
     </div>
   );
 }

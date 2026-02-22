@@ -7,7 +7,7 @@ import { GlassWindow } from "./components/GlassWindow";
 import { ThemeSelector } from "./components/ThemeSelector";
 import { LockScreen } from "./components/LockScreen";
 import { motion, AnimatePresence } from "motion/react";
-import { Loader2, AlertCircle, Lock } from "lucide-react";
+import { Loader2, AlertCircle, Lock, Search } from "lucide-react";
 import { useWindowManager } from "./hooks/useWindowManager";
 import { ThemeProvider } from "./context/ThemeContext";
 
@@ -61,7 +61,6 @@ function AppContent() {
       
       if (data.error) {
         setError(data.error);
-        alert(data.error);
       } else if (Array.isArray(data) && data.length > 0) {
         // Update the existing search window with the result data
         const targetWindow = windows.find(w => w.type === 'search');
@@ -73,11 +72,9 @@ function AppContent() {
         }
       } else {
         setError("Kelime bulunamadı.");
-        alert("Kelime bulunamadı.");
       }
     } catch (err) {
       setError("Bir hata oluştu.");
-      alert("Bir hata oluştu.");
     } finally {
       setLoading(false);
     }
@@ -147,7 +144,12 @@ function AppContent() {
                                 <SearchBar onSearch={handleSearch} isLoading={loading} />
                             </div>
                             <div className="flex-1 overflow-y-auto custom-scrollbar relative">
-                                {win.data ? (
+                                {error ? (
+                                    <div className="flex flex-col items-center justify-center h-full text-red-400 p-6 text-center">
+                                        <AlertCircle className="w-12 h-12 mb-4 opacity-80" />
+                                        <p className="text-lg font-medium">{error}</p>
+                                    </div>
+                                ) : win.data ? (
                                     <WordCard 
                                         data={win.data}
                                         isFavorite={favorites.includes(win.data.madde)}
@@ -155,6 +157,7 @@ function AppContent() {
                                     />
                                 ) : (
                                     <div className="flex flex-col items-center justify-center h-full text-white/30">
+                                        <Search className="w-16 h-16 mb-4 opacity-20" />
                                         <p className="text-lg">Aramak için bir kelime yazın</p>
                                     </div>
                                 )}
